@@ -7,16 +7,25 @@ import com.cybersource.example.config.ApplicationProperties;
 import com.cybersource.example.domain.CaptureContextResponseBody;
 import com.cybersource.example.domain.JWK;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JWEDecrypter;
+import com.nimbusds.jose.JWEObject;
+import com.nimbusds.jose.Payload;
+import com.nimbusds.jose.crypto.RSADecrypter;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigInteger;
 import java.security.KeyFactory;
+import java.security.PrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import java.util.Base64.Decoder;
@@ -25,6 +34,8 @@ import java.util.Base64.Decoder;
 @RequiredArgsConstructor
 public class JwtProcessorService {
 
+    @Value("classpath:keystore/private_key.pem")
+    private Resource ctpDropInUIKey;
     @Autowired
     private final ApplicationProperties applicationProperties;
     @SneakyThrows
@@ -63,6 +74,23 @@ public class JwtProcessorService {
         return mappedBody.ctx().stream().findFirst()
                 .map(wrapper -> wrapper.data().clientLibrary())
                 .orElseThrow();
+    }
+
+    @SneakyThrows
+    public String decryptPaymentCredentials(final String paymentCredentials) {
+        final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(ctpDropInUIKey.getContentAsByteArray());
+        final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        final PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
+
+        final JWEObject jweObject = JWEObject.parse(paymentCredentials);
+        final JWEDecrypter decrypter = new RSADecrypter(privateKey);
+
+        // This will throw an exception if the key doesn't match, etc.
+        jweObject.decrypt(decrypter);
+
+        Payload decodedJWT = SignedJWT.parse(jweObject.getPayload().toString()).getPayload();
+
+        return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(decodedJWT.toJSONObject());
     }
 
     @SneakyThrows

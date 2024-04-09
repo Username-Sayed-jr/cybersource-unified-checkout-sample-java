@@ -68,7 +68,7 @@ public class PayerAuthenticationService {
 
     @SneakyThrows
     private PayerAuthenticationApi getPayerAuthenticationApi() {
-        final ApiClient apiClient = new ApiClient(new MerchantConfig(applicationProperties.getAsJavaProperties()));
+        final ApiClient apiClient = new ApiClient(new MerchantConfig(applicationProperties.getMerchantConfigAsJavaProperties()));
         return new PayerAuthenticationApi(apiClient);
     }
 

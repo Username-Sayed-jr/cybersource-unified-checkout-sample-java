@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" th:href="${bootstrapVersion}"
-          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Capture Context</title>
     <script>
       if(window. self === window.top) {}
@@ -14,13 +14,14 @@
         emptyDiv.innerHTML = "";
         document.body.append(emptyDiv);
       }
-
     </script>
 </head>
 
 <body>
 <nav class="navbar navbar-expand-md navbar-dark sticky-top bg-dark">
-    <a class="navbar-brand" href="/">Unified Checkout</a>
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Unified Checkout</a>
+    </div>
 </nav>
 
 <main role="main" class="container">

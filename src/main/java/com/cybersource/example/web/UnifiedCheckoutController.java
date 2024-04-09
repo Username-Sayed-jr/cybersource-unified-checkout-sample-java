@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
 import java.nio.file.Files;
-import java.time.LocalTime;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -29,13 +28,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Controller
 @RequiredArgsConstructor
 @SessionAttributes({"captureContextJwt", "bootstrapVersion", "unifiedCheckoutLibraryVersion",
-        "encodedTransientToken", "decodedTransientToken", "referenceId", "transactionId"})
+        "encodedTransientToken", "decodedTransientToken", "referenceId", "transactionId", "usedDropInUI"})
 public class UnifiedCheckoutController {
 
-    @Value("classpath:capture-context-request.json")
-    private Resource captureContextRequestJson;
+    @Value("classpath:default-uc-capture-context-request.json")
+    private Resource ucCaptureContextRequestJson;
 
-    private static final String BOOTSTRAP_VERSION = "https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css";
     @Autowired
     private final CaptureContextService captureContextService;
 
@@ -50,16 +48,16 @@ public class UnifiedCheckoutController {
 
     private String threeDSTransactionId;
 
-    @GetMapping("/")
+    @GetMapping("/uc-overview")
     @SneakyThrows
-    public String index(final Model model) {
-        try (final Stream<String> lines = Files.lines(captureContextRequestJson.getFile().toPath())) {
+    public String ucOverview(final Model model) {
+        try (final Stream<String> lines = Files.lines(ucCaptureContextRequestJson.getFile().toPath())) {
             final long lineCount = lines.count();
             model.addAttribute("requestLineCount", lineCount);
         }
-        model.addAttribute("requestJson", IOUtils.toString(captureContextRequestJson.getInputStream(), UTF_8));
-        model.addAttribute("bootstrapVersion", BOOTSTRAP_VERSION);
-        return "index";
+        model.addAttribute("requestJson", IOUtils.toString(ucCaptureContextRequestJson.getInputStream(), UTF_8));
+        model.addAttribute("usedDropInUI", false);
+        return "uc-overview";
     }
 
     @PostMapping("/capture-context")

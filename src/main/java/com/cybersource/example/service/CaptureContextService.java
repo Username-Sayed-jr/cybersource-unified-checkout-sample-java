@@ -25,7 +25,7 @@ public class CaptureContextService {
         // properties to a normal Properties class
 
         // Create an instance of Cybersource's generic API client using our merchant config.
-        final ApiClient apiClient = new ApiClient(new MerchantConfig(applicationProperties.getAsJavaProperties()));
+        final ApiClient apiClient = new ApiClient(new MerchantConfig(applicationProperties.getMerchantConfigAsJavaProperties()));
 
         // Use it to instantiate the Unified-Checkout-specific capture context API
         final UnifiedCheckoutCaptureContextApi captureContextApi = new UnifiedCheckoutCaptureContextApi(apiClient);
