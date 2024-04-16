@@ -39,10 +39,10 @@ public class PaymentCredentialsService {
     }
 
     @SneakyThrows
-    public String requestCaptureContextWithoutSDK(final String jti) {
+    public String requestCaptureContextWithoutSDK(final String paymentCredentialsReference) {
 
         final String date = RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("GMT")));
-        final String resource = "/flex/v2/payment-credentials/" + jti;
+        final String resource = "/flex/v2/payment-credentials/" + paymentCredentialsReference;
         final String url = "https://" + applicationProperties.getRequestHost() + resource;
 
         // All of these headers are created automatically by the API client in the above method.

@@ -32,6 +32,7 @@ public class ApplicationProperties {
 
     // When we need to assume the role of the portfolio, who encrypts the payment credentials, we must use a different Merchant config
     // With the portfolio's information
+    // Currently not used but will be when the SDK is fixed
     public Properties getPortfolioConfigAsJavaProperties() {
         Properties props = getSharedProperties();
         props.setProperty("merchantID", getPorfolioId());

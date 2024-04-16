@@ -21,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -29,6 +31,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import java.util.Base64.Decoder;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -78,19 +81,27 @@ public class JwtProcessorService {
 
     @SneakyThrows
     public String decryptPaymentCredentials(final String paymentCredentials) {
-        final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(ctpDropInUIKey.getContentAsByteArray());
-        final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        final PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(ctpDropInUIKey.getInputStream()))) {
+            final String key = reader.lines()
+                    .filter(line -> !line.startsWith("-----BEGIN PRIVATE KEY-----")
+                            && !line.startsWith("-----END PRIVATE KEY-----"))
+                    .collect(Collectors.joining());
+            final byte[] keyBytes = Base64.getDecoder().decode(key);
 
-        final JWEObject jweObject = JWEObject.parse(paymentCredentials);
-        final JWEDecrypter decrypter = new RSADecrypter(privateKey);
+            final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+            final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            final PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
 
-        // This will throw an exception if the key doesn't match, etc.
-        jweObject.decrypt(decrypter);
+            final JWEObject jweObject = JWEObject.parse(paymentCredentials);
+            final JWEDecrypter decrypter = new RSADecrypter(privateKey);
 
-        Payload decodedJWT = SignedJWT.parse(jweObject.getPayload().toString()).getPayload();
+            // This will throw an exception if the key doesn't match, etc.
+            jweObject.decrypt(decrypter);
 
-        return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(decodedJWT.toJSONObject());
+            final Payload decodedJWT = SignedJWT.parse(jweObject.getPayload().toString()).getPayload();
+
+            return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(decodedJWT.toJSONObject());
+        }
     }
 
     @SneakyThrows
