@@ -27,7 +27,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes({"captureContextJwt", "bootstrapVersion", "unifiedCheckoutLibraryVersion",
+@SessionAttributes({"captureContextJwt", "unifiedCheckoutLibraryVersion",
         "encodedTransientToken", "decodedTransientToken", "referenceId", "transactionId", "usedDropInUI"})
 public class UnifiedCheckoutController {
 
@@ -48,6 +48,11 @@ public class UnifiedCheckoutController {
 
     private String threeDSTransactionId;
 
+    @GetMapping("/")
+    @SneakyThrows
+    public String index() {
+        return "index";
+    }
     @GetMapping("/uc-overview")
     @SneakyThrows
     public String ucOverview(final Model model) {

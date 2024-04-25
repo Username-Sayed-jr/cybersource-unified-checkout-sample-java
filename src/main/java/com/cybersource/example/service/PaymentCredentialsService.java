@@ -32,14 +32,14 @@ public class PaymentCredentialsService {
     public String getEncryptedPaymentCredentials(final String jwt) {
         // Create an instance of Cybersource's generic API client using our merchant config.
         // In this case we want to use the portfolio ID since only the portfolio has access to access and decrypt the payment credentials
-        final String jti = new ObjectMapper().readTree(jwt).get("paymentCredentialsReference").get(applicationProperties.getPorfolioId()).textValue();
+        final String paymentCredentialsReferenceId = new ObjectMapper().readTree(jwt).get("paymentCredentialsReference").get(applicationProperties.getPorfolioId()).textValue();
 
-        // TODO: Use SDK when endpoint is updated.
-        return requestCaptureContextWithoutSDK(jti);
+        // TODO: Use SDK when endpoint is updated and remove this method.
+        return getEncryptedPaymentCredentialsWithoutSDK(paymentCredentialsReferenceId);
     }
 
     @SneakyThrows
-    public String requestCaptureContextWithoutSDK(final String paymentCredentialsReference) {
+    public String getEncryptedPaymentCredentialsWithoutSDK(final String paymentCredentialsReference) {
 
         final String date = RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("GMT")));
         final String resource = "/flex/v2/payment-credentials/" + paymentCredentialsReference;

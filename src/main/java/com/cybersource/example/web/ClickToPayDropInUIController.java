@@ -21,7 +21,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes({"bootstrapVersion", "usedDropInUI", "encodedTransientToken", "decodedTransientToken"})
+@SessionAttributes({"usedDropInUI", "encodedTransientToken", "decodedTransientToken"})
 public class ClickToPayDropInUIController {
 
     @Value("classpath:default-ctp-drop-in-ui-capture-context-request.json")
