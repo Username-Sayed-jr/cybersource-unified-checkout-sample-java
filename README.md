@@ -24,9 +24,9 @@ For users of the Click to Pay Drop-in UI, the developer guide is available [here
 1. Uncomment the properties below in [application.properties](./src/main/resources/application.properties) with your CyberSource REST credentials created in the
    [EBC Portal](https://ebc2test.cybersource.com/) (learn more about how to get an account [here](https://developer.cybersource.com/hello-world.html)).
     ```properties
-    app.merchantID=YOUR MERCHANT ID
-    app.merchantKeyId=YOUR KEY ID (SHARED SECRET SERIAL NUMBER)
-    app.merchantSecretKey=YOUR SECRET KEY
+    app.merchantID=egyptair_usd
+    app.merchantKeyId=2/ZNP6aX2fAfNKCl2il3XAX14V5lQFSJGw4C694DmPY=(SHARED SECRET SERIAL NUMBER)
+    app.merchantSecretKey=6d3ae3dd-e7e8-4e38-9111-bb882ffb9403
     ```
    If you do not have a merchant ID, set one up or [reach out](https://developer.cybersource.com/support/contact-us.html) 
    for information about our `testrest` merchant to get up and running quickly.<p/>
